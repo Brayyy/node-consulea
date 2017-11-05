@@ -5,10 +5,10 @@ Module goals:
 - Compile single config object from Consul kv, environment variables, and command line arguments.
 - Watch for changes in Consul prefix, send an event with updated config.
 - Verify required variables are set.
-- Be extremely light weight, and have few or no dependencies.
+- Be extremely light weight, having minimal dependencies.
 - Predictable config key outcome given different standards of input variables using different sources.
-- Simplify origin of keys in Consul and Env. Each project should have it's own namespace, no shared namespaces.
-- No ES6, so it works under Node.js 0.10 and onward.
+- Simplify origin of keys in Consul and Env. Each project should have it's own namespace, nothing shared.
+- No ES6 dependency, so it works under Node.js 0.10 and onward.
 
 Variables are first read from Consul, then the environment, then command line arguments, allowing the user to override something already previously set in Consul. The config key `webPort` can be set by Consul key `test-svc/web-port` and can be overridden by environment variable `TESTSVC_WEB_PORT`, and both can be overridden by `--web-port`.
 
@@ -20,9 +20,10 @@ var Consulea = require('consulea');
 
 // Create new instance of module, pass in config
 var consulea = new Consulea({
-    consulToken: '00000000-test-service',
+    consulToken: '4fe3dee9-4148-404e-9928-d95cfb1e6947',
     consulPrefix: 'test-svc/',
-    envPrefix: 'TEST'
+    envPrefix: 'TESTSVC',
+    requiredKeys: ['serverName', 'port']
 });
 
 // Store your config however you please.
@@ -45,10 +46,10 @@ Config is now available to project from three different sources:
 
 | Consul key | Env key | CLI key | Resulting variable |
 | - | - | - | - |
-| test-svc/port | TESTSVC_PORT | --port | port |
-| test-svc/server-name | TESTSVC_SERVER_NAME | --server-name | serverName |
+| test-svc/port         | TESTSVC_PORT         | --port         | port        |
+| test-svc/server-name  | TESTSVC_SERVER_NAME  | --server-name  | serverName  |
 | test-svc/max-connects | TESTSVC_MAX_CONNECTS | --max-connects | maxConnects |
-| test-svc/time-out-ms | TESTSVC_TIME_OUT_MS | --time-out-ms | timeOutMs |
+| test-svc/time-out-ms  | TESTSVC_TIME_OUT_MS  | --time-out-ms  | timeOutMs   |
 
 ```bash
 # Assuming Consul has all of the above keys configured,
@@ -73,7 +74,10 @@ node someScript.js --max-connects=50 --server-name="Prod server"
 | exitIfRequiredKeysFail | No  | If set `false`, Consulea will just warn about missing key |
 | consulClientConfig     | No  | Consul config object, if you'd rather configure it yourself |
 
-Note: The Consul host:port can be also be defined using the environment variable `CONSUL_HTTP_ADDR`. This may be helpful if code is running in Docker or the Consul agent isn't running on the local instance.
+
+## Notes
+
+The Consul host:port can be also be defined using the environment variable `CONSUL_HTTP_ADDR`. This may be helpful if code is running in Docker or the Consul agent isn't running on the local instance.
 
 ```bash
 # Don't use localhost:8500, connect somewhere else
