@@ -1,0 +1,40 @@
+{
+  "name": "consulea",
+  "version": "1.0.0",
+  "description": "Load Consul keys, environment vars, and command line arguments in a predictable, standardized way.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brayyy/node-consulea.git"
+  },
+  "keywords": [
+    "Consul",
+    "arguments",
+    "camel",
+    "camelcase",
+    "case",
+    "cli",
+    "command",
+    "env",
+    "environment",
+    "hot",
+    "kv",
+    "line",
+    "parameters",
+    "reload",
+    "variables"
+  ],
+  "author": "Bray Almini <bray@coreforge.com> (http://www.coreforge.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brayyy/node-consulea/issues"
+  },
+  "homepage": "https://github.com/Brayyy/node-consulea#readme",
+  "dependencies": {
+    "camelcase": "^4.1.0",
+    "consul": "^0.30.0"
+  }
+}
