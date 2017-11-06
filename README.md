@@ -12,6 +12,10 @@ Module goals:
 
 Variables are first read from Consul, then the environment, then command line arguments, allowing the user to override something already previously set in Consul. The config key `webPort` can be set by Consul key `test-svc/web-port` and can be overridden by environment variable `TESTSVC_WEB_PORT`, and both can be overridden by `--web-port`.
 
+## Install
+```bash
+npm install --save consulea
+```
 
 ## Example
 ```javascript
