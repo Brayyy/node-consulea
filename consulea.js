@@ -128,7 +128,7 @@ var Consulea = (function () {
 
 		this.config = configIn;
 		this.kvData = {};
-		this.emitReady = true;
+		this.sentReady = false;
 		this.consulConfig = makeConsulConfig(this.config);
 		this.consulClient = consul(this.consulConfig);
 
@@ -191,8 +191,8 @@ Consulea.prototype.watchStart = function () {
 		self.emit('change', null, kvData);
 
 		// Emit "ready" event only once
-		if (self.emitReady) {
-			self.emitReady = false;
+		if (!self.sentReady) {
+			self.sentReady = true;
 			self.emit('ready', null, kvData);
 		}
 	});
