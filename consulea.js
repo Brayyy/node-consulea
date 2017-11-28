@@ -116,6 +116,34 @@ function findMissingKeys (kvData, requiredKeys) {
 	return missingKeys;
 }
 
+
+/**
+ * Compare previous and current findings for changed keys. Changed keys are returned in an array.
+ * @param {object} self Self object
+ * @returns {array} List of added/removed/changed keys
+ */
+function findChangedKeys (self) {
+	var changedKeys = [];
+	var temp = JSON.parse(JSON.stringify(self.lastGoodKvData));
+	// Loop on previous findings, check for existence of and compare Key=>ModifyIndex map
+	var newKeys = Object.keys(self.kvData);
+	for (var j = 0; j < newKeys.length; j++) {
+		var newKey = newKeys[j];
+		var newVal = self.kvData[newKey];
+		if (temp[newKey] && temp[newKey] === newVal) {
+			delete temp[newKey];
+		} else {
+			temp[newKey] = newVal;
+		}
+	}
+	// Standardize the key
+	Object.keys(temp).forEach(function (kvKey) {
+		kvKey = kvKey.replace(self.config.consulPrefix, '');
+		changedKeys.push(camelCase(kvKey));
+	});
+	return changedKeys;
+}
+
 /**
  * JavaScript Pseudo-class that is compatible all the way back to Node 0.10
  */
@@ -181,6 +209,8 @@ Consulea.prototype.watchStart = function () {
 		kvData = parseArgs(kvData);
 		self.kvData = kvData;
 
+		var changedKeys = findChangedKeys(self);
+
 		// Verify require keys
 		var missingKeys = findMissingKeys(kvData, self.config.requiredKeys);
 
@@ -228,7 +258,7 @@ Consulea.prototype.watchStart = function () {
 		}
 
 		// Emit "update" event every time there is a change
-		self.emit('update', null, kvData);
+		self.emit('update', null, kvData, changedKeys);
 
 		// Emit "ready" event only once
 		if (!self.sentReady) {
