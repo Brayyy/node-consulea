@@ -27,7 +27,8 @@ var consulea = new Consulea({
     consulToken: '4fe3dee9-4148-404e-9928-d95cfb1e6947',
     consulPrefix: 'test-svc/',
     envPrefix: 'TESTSVC',
-    requiredKeys: ['serverName', 'port']
+    requiredKeys: ['serverName', 'port'],
+    ifMissingKeysOnUpdate: 'warn',
 });
 
 // Store your config however you please.
@@ -41,7 +42,6 @@ consulea.on('update', function (err, data) {
 // Continue starting up project, with all config loaded for the first time.
 // This event is only called once.
 consulea.on('ready', function (err, data) {
-    myConfig = data;
     // Proceed with starting up... open service ports, etc.
 });
 ```
@@ -74,10 +74,16 @@ node someScript.js --max-connects=50 --server-name="Prod server"
 | consulToken            | No  | ACL Token used to authenticate with Consul service |
 | consulPrefix           | Yes | Namespace/prefix to search for keys in Consul |
 | envPrefix              | No  | Namespace/prefix to search for keys in local environment |
-| requiredKeys           | No  | List of camelCased keys which must exist, or script will exit |
-| exitIfRequiredKeysFail | No  | If set `false`, Consulea will just warn about missing key |
+| requiredKeys           | No  | List of camelCased keys which are considered to be required |
 | consulClientConfig     | No  | Consul config object, if you'd rather configure it yourself |
+| ifMissingKeysOnStartUp | No  | Set behavior when required keys are missing on first start up (default: exit) |
+| ifMissingKeysOnUpdate  | No  | Set behavior when required keys are missing on any update after start up (default: exit) |
 
+ifMissingKeysOnStartUp and ifMissingKeysOnUpdate can be one of the following:
+- `exit`: Consulea will exit if any keys are missing.
+- `warn`: Consulea will warn if any keys are missing.
+- `skip`: Consulea will skip emitting the update/ready event if any keys are missing.
+- `lastGoodValue`: Consulea will try to use the last good value for a given missing key and will exit if any keys did not previously exist.
 
 ## Notes
 

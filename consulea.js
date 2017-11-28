@@ -132,11 +132,11 @@ var Consulea = (function () {
 		this.sentReady = false;
 		this.consulConfig = makeConsulConfig(this.config);
 		this.consulClient = consul(this.consulConfig);
+		this.lastGoodKvData = {};
 
 		// Set defaults
-		if (this.config.exitIfRequiredKeysFail === undefined) {
-			this.config.exitIfRequiredKeysFail = true;
-		}
+		this.config.ifMissingKeysOnStartUp = this.config.ifMissingKeysOnStartUp || 'exit';
+		this.config.ifMissingKeysOnUpdate = this.config.ifMissingKeysOnUpdate || 'exit';
 
 		// Start the watcher
 		this.watchStart();
@@ -183,10 +183,48 @@ Consulea.prototype.watchStart = function () {
 
 		// Verify require keys
 		var missingKeys = findMissingKeys(kvData, self.config.requiredKeys);
-		if (missingKeys.length > 0 && self.config.exitIfRequiredKeysFail) {
+
+		// Something is missing
+		if (missingKeys.length > 0) {
 			var missingKeyList = missingKeys.join(', ');
-			console.error('Exiting, due to missing required keys: ' + missingKeyList);
-			process.exit(1);
+			// This is handled differently, depending on if this is the first time or not
+			var whichRule = (self.sentReady ? 'ifMissingKeysOnUpdate' : 'ifMissingKeysOnStartUp');
+			var ruleValue = self.config[whichRule];
+
+			switch (ruleValue) {
+				case 'exit':
+					console.error('Exiting, Consulea found keys missing: ' + missingKeyList);
+					process.exit(1);
+					break;
+
+				case 'warn':
+					console.warn('Warning, Consulea found keys missing: ' + missingKeyList);
+					break;
+
+				case 'skip':
+					console.warn('Warning, Consulea found keys missing, skipping event call: ' + missingKeyList);
+					return;
+
+				case 'lastGoodValue':
+					for (var i = 0; i < missingKeys.length; i++) {
+						var missingKey = missingKeys[i];
+						if (self.lastGoodKvData[missingKey] !== undefined) {
+							console.error('Warning, Consulea found key missing, using old value: ' + missingKey);
+							kvData[missingKey] = self.lastGoodKvData[missingKey];
+						} else {
+							console.error('Exiting, Consulea found key missing with no previous value: ' + missingKey);
+							process.exit(1);
+						}
+					}
+					break;
+
+				default:
+					console.error('Exiting, Consulea has unknown config: ' + whichRule + '=' + ruleValue);
+					process.exit(1);
+			}
+		} else {
+			// console.log('No keys missing.');
+			self.lastGoodKvData = kvData;
 		}
 
 		// Emit "update" event every time there is a change
