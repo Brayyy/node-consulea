@@ -34,7 +34,7 @@ var consulea = new Consulea({
 var myConfig = {};
 
 // This event is called every time the Consul namespace is updated and upon first start.
-consulea.on('change', function (err, data) {
+consulea.on('update', function (err, data) {
     myConfig = data;
 });
 

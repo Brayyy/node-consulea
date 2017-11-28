@@ -189,8 +189,8 @@ Consulea.prototype.watchStart = function () {
 			process.exit(1);
 		}
 
-		// Emit "change" event every time there is a change
-		self.emit('change', null, kvData);
+		// Emit "update" event every time there is a change
+		self.emit('update', null, kvData);
 
 		// Emit "ready" event only once
 		if (!self.sentReady) {
