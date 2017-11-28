@@ -98,21 +98,22 @@ function parseArgs (kvData) {
 }
 
 /**
- * Verify the discovered KV data contains all required keys
+ * Verify the discovered KV data contains all required keys. Missing keys are returned in an array.
  * @param {object} kvData Discovered key/value data input
  * @param {object} requiredKeys List of camelCased keys which are required
+ * @returns {array} List of missing keys
  */
-function missingKeys (kvData, requiredKeys) {
+function findMissingKeys (kvData, requiredKeys) {
+	var missingKeys = [];
 	if (requiredKeys) {
 		for (var i = 0; i < requiredKeys.length; i++) {
 			var requiredKey = requiredKeys[i];
 			if (kvData[requiredKey] === undefined) {
-				console.error('Missing required config key "' + requiredKey + '".');
-				return true;
+				missingKeys.push(requiredKey);
 			}
 		}
-		return false;
 	}
+	return missingKeys;
 }
 
 /**
@@ -181,9 +182,10 @@ Consulea.prototype.watchStart = function () {
 		self.kvData = kvData;
 
 		// Verify require keys
-		var hasMissingKeys = missingKeys(kvData, self.config.requiredKeys);
-		if (hasMissingKeys && self.config.exitIfRequiredKeysFail) {
-			console.error('Exiting, due to missing required key.');
+		var missingKeys = findMissingKeys(kvData, self.config.requiredKeys);
+		if (missingKeys.length > 0 && self.config.exitIfRequiredKeysFail) {
+			var missingKeyList = missingKeys.join(', ');
+			console.error('Exiting, due to missing required keys: ' + missingKeyList);
 			process.exit(1);
 		}
 
