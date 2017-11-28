@@ -169,7 +169,7 @@ Consulea.prototype.watchStart = function () {
 		if (res.statusCode !== 200) {
 			console.error(
 				'Consul error: HTTP/' + res.statusCode + ' ' + res.statusMessage + '. ' +
-				'Possible bad Token, missing or unauthorized prefix.'
+				'Possible bad Token, missing or unauthorized prefix: ' + self.config.consulPrefix
 			);
 			return;
 		}
