@@ -17,11 +17,12 @@ var consulea = new Consulea({
 // Store your config however you please.
 var myConfig = {};
 
-consulea.on('change', function (err, newConfig) {
+consulea.on('update', function (err, newConfig, changedKeys) {
 	// The state of config has changed, use this event to save a new copy or action upon the result.
 	// This event is called every time the Consul namespace is updated and also upon first start.
 	myConfig = newConfig;
-	console.log('consulea on-change triggered:', myConfig);
+	console.log('consulea on-update triggered:', myConfig);
+	console.log('consulea on-update found these keys have changed:', changedKeys);
 });
 
 consulea.on('ready', function (err, newConfig) {
