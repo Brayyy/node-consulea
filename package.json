@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/Brayyy/node-consulea#readme",
   "dependencies": {
-    "camelcase": "^4.1.0",
+    "camelcase": "~3.0.0",
     "consul": "^0.30.0"
   }
 }
