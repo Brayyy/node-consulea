@@ -257,13 +257,16 @@ Consulea.prototype.watchStart = function () {
 			self.lastGoodKvData = kvData;
 		}
 
+		// Make a copy so the code using this module can not modify kvData by accident
+		var kvDataCopy = JSON.parse(JSON.stringify(self.kvData));
+
 		// Emit "update" event every time there is a change
-		self.emit('update', null, kvData, changedKeys);
+		self.emit('update', null, kvDataCopy, changedKeys);
 
 		// Emit "ready" event only once
 		if (!self.sentReady) {
 			self.sentReady = true;
-			self.emit('ready', null, kvData);
+			self.emit('ready', null, kvDataCopy);
 		}
 	});
 
