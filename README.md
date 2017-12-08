@@ -44,6 +44,11 @@ consulea.on('update', function (err, data, changedKeys) {
 consulea.on('ready', function (err, data) {
     // Proceed with starting up... open service ports, etc.
 });
+
+// Handle errors and warnings as you see fit
+consulea.on('error', function (err) {
+    console.error('Consulea error:', err);
+});
 ```
 
 Config is now available to project from three different sources:
@@ -78,6 +83,7 @@ node someScript.js --max-connects=50 --server-name="Prod server"
 | consulClientConfig     | No  | Consul config object, if you'd rather configure it yourself |
 | ifMissingKeysOnStartUp | No  | Set behavior when required keys are missing on first start up (default: exit) |
 | ifMissingKeysOnUpdate  | No  | Set behavior when required keys are missing on any update after start up (default: exit) |
+| suppressErrors         | No  | Set `true` to prevent Consulea from emitting errors. The emitted error event will still occur |
 
 ifMissingKeysOnStartUp and ifMissingKeysOnUpdate can be one of the following:
 - `exit`: Consulea will exit if any keys are missing.

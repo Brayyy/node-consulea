@@ -163,8 +163,20 @@ var Consulea = (function () {
 		this.lastGoodKvData = {};
 
 		// Set defaults
+		this.config.suppressErrors = this.config.suppressErrors || false;
 		this.config.ifMissingKeysOnStartUp = this.config.ifMissingKeysOnStartUp || 'exit';
 		this.config.ifMissingKeysOnUpdate = this.config.ifMissingKeysOnUpdate || 'exit';
+
+		this.handleError = function (errObj) {
+			if (!this.config.suppressErrors) {
+				console.error(errObj.message);
+			}
+			this.emit('error', errObj);
+			// Exit if the error was fatal
+			if (errObj.level === 'FATAL') {
+				process.exit(1);
+			}
+		};
 
 		// Start the watcher
 		this.watchStart();
@@ -195,10 +207,12 @@ Consulea.prototype.watchStart = function () {
 	this._watcher.on('change', function (response, res) {
 		// Try to catch errors using http.IncomingMessage
 		if (res.statusCode !== 200) {
-			console.error(
-				'Consul error: HTTP/' + res.statusCode + ' ' + res.statusMessage + '. ' +
+			self.handleError({
+				code: 'NON_HTTP_200',
+				level: 'WARN',
+				message: 'Consul error: HTTP/' + res.statusCode + ' ' + res.statusMessage + '. ' +
 				'Possible bad Token, missing or unauthorized prefix: ' + self.config.consulPrefix
-			);
+			});
 			return;
 		}
 
@@ -223,34 +237,55 @@ Consulea.prototype.watchStart = function () {
 
 			switch (ruleValue) {
 				case 'exit':
-					console.error('Exiting, Consulea found keys missing: ' + missingKeyList);
-					process.exit(1);
+					self.handleError({
+						code: 'MISSING_KEY_EXIT',
+						level: 'FATAL',
+						message: 'Exiting, Consulea found keys missing: ' + missingKeyList
+					});
 					break;
 
 				case 'warn':
-					console.warn('Warning, Consulea found keys missing: ' + missingKeyList);
+					self.handleError({
+						code: 'MISSING_KEY_WARN',
+						level: 'WARN',
+						message: 'Warning, Consulea found keys missing: ' + missingKeyList
+					});
 					break;
 
 				case 'skip':
-					console.warn('Warning, Consulea found keys missing, skipping event call: ' + missingKeyList);
+					self.handleError({
+						code: 'MISSING_KEY_SKIP',
+						level: 'WARN',
+						message: 'Warning, Consulea found keys missing, skipping event call: ' + missingKeyList
+					});
 					return;
 
 				case 'lastGoodValue':
 					for (var i = 0; i < missingKeys.length; i++) {
 						var missingKey = missingKeys[i];
 						if (self.lastGoodKvData[missingKey] !== undefined) {
-							console.error('Warning, Consulea found key missing, using old value: ' + missingKey);
+							self.handleError({
+								code: 'MISSING_KEY_USED_PREV_VAL',
+								level: 'WARN',
+								message: 'Warning, Consulea found key missing, using old value: ' + missingKey
+							});
 							kvData[missingKey] = self.lastGoodKvData[missingKey];
 						} else {
-							console.error('Exiting, Consulea found key missing with no previous value: ' + missingKey);
-							process.exit(1);
+							self.handleError({
+								code: 'MISSING_KEY_NO_PREV_VAL',
+								level: 'FATAL',
+								message: 'Exiting, Consulea found key missing with no previous value: ' + missingKey
+							});
 						}
 					}
 					break;
 
 				default:
-					console.error('Exiting, Consulea has unknown config: ' + whichRule + '=' + ruleValue);
-					process.exit(1);
+					self.handleError({
+						code: 'UNKNOWN_CONFIG',
+						level: 'FATAL',
+						message: 'Exiting, Consulea has unknown config: ' + whichRule + '=' + ruleValue
+					});
 			}
 		} else {
 			// console.log('No keys missing.');
@@ -272,8 +307,11 @@ Consulea.prototype.watchStart = function () {
 
 	// Emit "error" when Consul connection emits an error
 	this._watcher.on('error', function (err) {
-		self.emit('error', err);
-		console.error('Consul error:', err);
+		self.handleError({
+			code: 'CLIENT_ERR',
+			level: 'WARN',
+			message: 'Consul error:' + err
+		});
 	});
 };
 

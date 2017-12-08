@@ -1,6 +1,6 @@
 {
   "name": "consulea",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Load Consul keys, environment vars, and command line arguments in a predictable, standardized way.",
   "main": "index.js",
   "scripts": {
