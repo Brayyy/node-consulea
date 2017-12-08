@@ -157,7 +157,7 @@ var Consulea = (function () {
 
 		this.config = configIn;
 		this.kvData = {};
-		this.sentReady = false;
+		this.initialLoad = true;
 		this.consulConfig = makeConsulConfig(this.config);
 		this.consulClient = consul(this.consulConfig);
 		this.lastGoodKvData = {};
@@ -232,7 +232,7 @@ Consulea.prototype.watchStart = function () {
 		if (missingKeys.length > 0) {
 			var missingKeyList = missingKeys.join(', ');
 			// This is handled differently, depending on if this is the first time or not
-			var whichRule = (self.sentReady ? 'ifMissingKeysOnUpdate' : 'ifMissingKeysOnStartUp');
+			var whichRule = (self.initialLoad ? 'ifMissingKeysOnStartUp' : 'ifMissingKeysOnUpdate');
 			var ruleValue = self.config[whichRule];
 
 			switch (ruleValue) {
@@ -295,12 +295,15 @@ Consulea.prototype.watchStart = function () {
 		// Make a copy so the code using this module can not modify kvData by accident
 		var kvDataCopy = JSON.parse(JSON.stringify(self.kvData));
 
-		// Emit "update" event every time there is a change
-		self.emit('update', null, kvDataCopy, changedKeys);
+		// Emit "update" event every time there is a change, and include some extra metadata
+		self.emit('update', null, kvDataCopy, {
+			changedKeys: changedKeys,
+			initialLoad: self.initialLoad
+		});
 
 		// Emit "ready" event only once
-		if (!self.sentReady) {
-			self.sentReady = true;
+		if (self.initialLoad) {
+			self.initialLoad = false;
 			self.emit('ready', null, kvDataCopy);
 		}
 	});
