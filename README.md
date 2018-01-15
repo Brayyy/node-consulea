@@ -29,6 +29,10 @@ var consulea = new Consulea({
     envPrefix: 'TESTSVC',
     requiredKeys: ['serverName', 'port'],
     ifMissingKeysOnUpdate: 'warn',
+    defaultData: {
+        maxConnects: "100",
+        timeOutMs: "10000",
+    },
 });
 
 // Store your config however you please.
@@ -85,6 +89,7 @@ node someScript.js --max-connects=50 --server-name="Prod server"
 | ifMissingKeysOnStartUp | No  | Set behavior when required keys are missing on first start up (default: exit) |
 | ifMissingKeysOnUpdate  | No  | Set behavior when required keys are missing on any update after start up (default: exit) |
 | suppressErrors         | No  | Set `true` to prevent Consulea from emitting errors. The emitted error event will still occur |
+| defaultData            | No  | Pass in default KV data, which may be overwritten by Consul, ENV or command line arguments |
 
 ifMissingKeysOnStartUp and ifMissingKeysOnUpdate can be one of the following:
 - `exit`: Consulea will exit if any keys are missing.

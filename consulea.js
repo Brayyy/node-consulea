@@ -156,6 +156,7 @@ var Consulea = (function () {
 		}
 
 		this.config = configIn;
+		this.kvDataDefault = configIn.defaultData || {};
 		this.kvData = {};
 		this.initialLoad = true;
 		this.consulConfig = makeConsulConfig(this.config);
@@ -223,7 +224,7 @@ Consulea.prototype.watchStart = function () {
 		}
 
 		// Build a new kvData from Consul, then Env, then Arguments
-		var kvData = {};
+		var kvData = self.kvDataDefault;
 		kvData = parseConsul(kvData, response, self.config.consulPrefix);
 		kvData = parseEnv(kvData, self.config.envPrefix);
 		kvData = parseArgs(kvData);
