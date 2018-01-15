@@ -171,7 +171,13 @@ var Consulea = (function () {
 			if (!this.config.suppressErrors) {
 				console.error(errObj.message);
 			}
-			this.emit('error', errObj);
+			// Catch possible 'TypeError: Uncaught, unspecified "error" event.'
+			// if error event is not registered
+			try {
+				this.emit('error', errObj);
+			} catch (e) {
+				// no-op
+			}
 			// Exit if the error was fatal
 			if (errObj.level === 'FATAL') {
 				process.exit(1);
