@@ -155,10 +155,12 @@ var Consulea = (function () {
 			throw new Error('consulPrefix not defined');
 		}
 
+		var self = this;
 		this.config = configIn;
 		this.kvDataDefault = configIn.defaultData || {};
 		this.kvData = {};
 		this.initialLoad = true;
+		this.isReady = false;
 		this.consulConfig = makeConsulConfig(this.config);
 		this.consulClient = consul(this.consulConfig);
 		this.lastGoodKvData = {};
@@ -184,6 +186,17 @@ var Consulea = (function () {
 				process.exit(1);
 			}
 		};
+
+		// This will loop until ready, then will callback. Useful if using run-series or async.series
+		this.callbackWhenReady = function (callback) {
+			if (this.isReady) {
+				callback();
+			} else {
+				setTimeout(function () {
+					self.callbackWhenReady(callback);
+				}, 50);
+			}
+		}
 
 		// Start the watcher
 		this.watchStart();
@@ -311,6 +324,7 @@ Consulea.prototype.watchStart = function () {
 		// Emit "ready" event only once
 		if (self.initialLoad) {
 			self.initialLoad = false;
+			self.isReady = true;
 			self.emit('ready', null, kvDataCopy);
 		}
 	});

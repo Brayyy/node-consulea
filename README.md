@@ -50,6 +50,11 @@ consulea.on('ready', function (err, data) {
     // Proceed with starting up... open service ports, etc.
 });
 
+// Or, if callbacks are more your style...
+consulea.callbackWhenReady(function (err){
+    // Proceed with starting up... open service ports, etc.
+});
+
 // Handle errors and warnings as you see fit
 consulea.on('error', function (err) {
     console.error('Consulea error:', err);
