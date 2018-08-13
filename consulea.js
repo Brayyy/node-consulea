@@ -309,7 +309,7 @@ Consulea.prototype.watchStart = function () {
 			}
 		} else {
 			// console.log('No keys missing.');
-			self.lastGoodKvData = kvData;
+			self.lastGoodKvData = JSON.parse(JSON.stringify(kvData));
 		}
 
 		// Make a copy so the code using this module can not modify kvData by accident
