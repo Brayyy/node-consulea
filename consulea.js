@@ -7,13 +7,13 @@ var camelCase = require('camelcase');
  * Read module config, returning config for Consul client
  * @param {object} configIn Module config to parse
  */
-function makeConsulConfig (configIn) {
+function makeConsulConfig (configIn, envObj) {
 	// Consul client config can be passed in whole
 	var consulConfig = configIn.consulClientConfig || {};
 
 	// Consul host/port can be sourced from env CONSUL_HTTP_ADDR
-	if (process.env.CONSUL_HTTP_ADDR) {
-		var httpAddr = process.env.CONSUL_HTTP_ADDR;
+	if (envObj.CONSUL_HTTP_ADDR) {
+		var httpAddr = envObj.CONSUL_HTTP_ADDR;
 		consulConfig.secure = (httpAddr.substr(0, 5) === 'https');
 		httpAddr = httpAddr.replace('http://', '').replace('https://', '');
 		httpAddr = httpAddr.split(':');
@@ -62,16 +62,16 @@ exports.parseConsul = parseConsul;
  * @param {string} prefix Environment prefix for to strip from discovered keys
  * @returns {object} Discovered key/value data output
  */
-function parseEnv (kvData, prefix) {
+function parseEnv (kvData, envObj, prefix) {
 	if (prefix) {
 		prefix += '_';
-		Object.keys(process.env).forEach(function (envKey) {
+		Object.keys(envObj).forEach(function (envKey) {
 			// Skip env keys which don't start with prefix
 			if (envKey.substring(0, prefix.length) === prefix) {
 				// Standardize the key
 				var kvKey = envKey.replace(prefix, '');
 				kvKey = camelCase(kvKey);
-				kvData[kvKey] = process.env[envKey];
+				kvData[kvKey] = envObj[envKey];
 			}
 		});
 	}
@@ -84,8 +84,8 @@ exports.parseEnv = parseEnv;
  * @param {object} kvData Discovered key/value data input
  * @returns {object} Discovered key/value data output
  */
-function parseArgs (kvData) {
-	process.argv.forEach(function (val) {
+function parseArgs (kvData, args) {
+	args.forEach(function (val) {
 		// Skip args that don't start with "--"
 		if (val.substring(0, 2) === '--') {
 			// Break apart key/value
@@ -167,7 +167,7 @@ var Consulea = (function () {
 		this.kvData = {};
 		this.initialLoad = true;
 		this.isReady = false;
-		this.consulConfig = makeConsulConfig(this.config);
+		this.consulConfig = makeConsulConfig(this.config, process.env);
 		this.consulClient = consul(this.consulConfig);
 		this.lastGoodKvData = {};
 
@@ -245,8 +245,8 @@ Consulea.prototype.watchStart = function () {
 		// Build a new kvData from Consul, then Env, then Arguments
 		var kvData = self.kvDataDefault;
 		kvData = parseConsul(kvData, response, self.config.consulPrefix);
-		kvData = parseEnv(kvData, self.config.envPrefix);
-		kvData = parseArgs(kvData);
+		kvData = parseEnv(kvData, process.env, self.config.envPrefix);
+		kvData = parseArgs(kvData, process.argv);
 		self.kvData = kvData;
 
 		var changedKeys = findChangedKeys(self);
