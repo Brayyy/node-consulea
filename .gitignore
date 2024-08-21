@@ -1,3 +1,5 @@
-node_modules
+.DS_Store
 notes.txt
-npm-debug.log
+reference_modules
+package-lock.json
+node_modules
