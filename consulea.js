@@ -27,6 +27,7 @@ function makeConsulConfig (configIn) {
 
 	return consulConfig;
 }
+exports.makeConsulConfig = makeConsulConfig;
 
 /**
  * Add KV data to object sourced from raw Consul watch response data
@@ -53,6 +54,7 @@ function parseConsul (kvData, dataIn, prefix) {
 	}
 	return kvData;
 }
+exports.parseConsul = parseConsul;
 
 /**
  * Add KV data to object sourced from environment variables with specific prefix
@@ -75,6 +77,7 @@ function parseEnv (kvData, prefix) {
 	}
 	return kvData;
 }
+exports.parseEnv = parseEnv;
 
 /**
  * Add KV data to object sourced from command line arguments
@@ -96,6 +99,7 @@ function parseArgs (kvData) {
 	});
 	return kvData;
 }
+exports.parseArgs = parseArgs;
 
 /**
  * Verify the discovered KV data contains all required keys. Missing keys are returned in an array.
@@ -115,6 +119,7 @@ function findMissingKeys (kvData, requiredKeys) {
 	}
 	return missingKeys;
 }
+exports.findMissingKeys = findMissingKeys;
 
 
 /**
@@ -143,6 +148,7 @@ function findChangedKeys (self) {
 	});
 	return changedKeys;
 }
+exports.findChangedKeys = findChangedKeys;
 
 /**
  * JavaScript Pseudo-class that is compatible all the way back to Node 0.10
@@ -346,4 +352,5 @@ Consulea.prototype.watchStop = function () {
 	this._watcher.end();
 };
 
-module.exports = Consulea;
+// module.exports = Consulea;
+exports.Consulea = Consulea;

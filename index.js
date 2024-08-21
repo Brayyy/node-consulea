@@ -13,4 +13,5 @@ var Consulea = require('./consulea');
  * Module exports.
  */
 
-module.exports = Consulea;
+// Publically export only the Consulea class
+module.exports = Consulea.Consulea;
