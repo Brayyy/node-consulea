@@ -1,8 +1,8 @@
 // Load module
-var Consulea = require('./');
+const Consulea = require('./');
 
 // Create new instance of module, pass in config
-var consulea = new Consulea({
+const consulea = new Consulea({
 	// consulClientConfig: {
 	// 	host: 'localhost',
 	// 	port: 8500
@@ -15,7 +15,7 @@ var consulea = new Consulea({
 });
 
 // Store your config however you please.
-var myConfig = {};
+const myConfig = {};
 
 consulea.on('update', function (err, newConfig, meta) {
 	// The state of config has changed, use this event to save a new copy or action upon the result.

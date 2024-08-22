@@ -8,7 +8,6 @@ Module goals:
 - Be extremely light weight, having minimal dependencies.
 - Predictable config key outcome given different standards of input variables using different sources.
 - Simplify origin of keys in Consul and Env. Each project should have it's own namespace, nothing shared.
-- No ES6 dependency, so it works under Node.js 0.10 and onward.
 
 Variables are first read from Consul, then the environment, then command line arguments, allowing the user to override something already previously set in Consul. The config key `webPort` can be set by Consul key `test-svc/web-port` and can be overridden by environment variable `TESTSVC_WEB_PORT`, and both can be overridden by `--web-port`.
 
@@ -20,10 +19,10 @@ npm install --save consulea
 ## Example
 ```javascript
 // Load module
-var Consulea = require('consulea');
+const Consulea = require('consulea');
 
 // Create new instance of module, pass in config
-var consulea = new Consulea({
+const consulea = new Consulea({
     consulToken: '4fe3dee9-4148-404e-9928-d95cfb1e6947',
     consulPrefix: 'test-svc/',
     envPrefix: 'TESTSVC',
@@ -36,7 +35,7 @@ var consulea = new Consulea({
 });
 
 // Store your config however you please.
-var myConfig = {};
+let myConfig = {};
 
 // This event is called every time the Consul namespace is updated and upon first start.
 // "meta" will supply things like keysChanged, and initialLoad

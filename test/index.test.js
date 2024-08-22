@@ -1,11 +1,11 @@
-var test = require("tape");
-var tt = require("../consulea"); // test target
+const test = require("tape");
+const tt = require("../consulea"); // test target
 
 test("makeConsulConfig()", function (t) {
   t.equal(typeof tt.makeConsulConfig, "function", "Function exists");
-  var configIn = {};
-  var envObj = {};
-  var consulConfig = {};
+  let configIn = {};
+  let envObj = {};
+  let consulConfig = {};
 
   configIn = {};
   envObj = {};
@@ -56,10 +56,10 @@ test("makeConsulConfig()", function (t) {
 
 test("parseConsul()", function (t) {
   t.equal(typeof tt.parseConsul, "function", "Function exists");
-  var kvData = {};
-  var dataIn = [];
-  var prefix = "";
-  var parsed = {};
+  let kvData = {};
+  let dataIn = [];
+  let prefix = "";
+  let parsed = {};
 
   kvData = {};
   dataIn = [];
@@ -133,9 +133,9 @@ test("parseConsul()", function (t) {
 
 test("parseEnv()", function (t) {
   t.equal(typeof tt.parseEnv, "function", "Function exists");
-  var kvdata = {};
-  var envObj = {};
-  var parsed = {};
+  let kvdata = {};
+  let envObj = {};
+  let parsed = {};
 
   kvdata = {};
   envObj = {};
@@ -167,9 +167,9 @@ test("parseEnv()", function (t) {
 
 test("parseArgs()", function (t) {
   t.equal(typeof tt.parseArgs, "function", "Function exists");
-  var args = [];
-  var kvdata = {};
-  var parsed = {};
+  let args = [];
+  let kvdata = {};
+  let parsed = {};
 
   kvdata = {};
   args = ["node", "index.js", "--foo=bar"];
@@ -196,9 +196,9 @@ test("parseArgs()", function (t) {
 
 test("findMissingKeys()", function (t) {
   t.equal(typeof tt.findMissingKeys, "function", "Function exists");
-  var config = {};
-  var requiredKeys = [];
-  var missingKeys = [];
+  let config = {};
+  let requiredKeys = [];
+  let missingKeys = [];
 
   config = { foo: "bar", bar: "123", qaz: "true" };
   requiredKeys = ["foo", "bar", "qaz"];
@@ -230,7 +230,7 @@ test("findMissingKeys()", function (t) {
 
 test("findChangedKeys()", function (t) {
   t.equal(typeof tt.findChangedKeys, "function", "Function exists");
-  var self = {};
+  let self = {};
 
   self = {
     lastGoodKvData: {},
@@ -239,7 +239,7 @@ test("findChangedKeys()", function (t) {
       consulPrefix: "cfg/vast-service/"
     }
   };
-  var changedKeys = tt.findChangedKeys(self);
+  let changedKeys = tt.findChangedKeys(self);
   t.deepEqual(changedKeys, [], "Empty kvData");
 
   self = {

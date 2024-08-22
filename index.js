@@ -7,7 +7,7 @@
  * Module dependencies.
  */
 
-var Consulea = require('./consulea');
+const Consulea = require("./consulea");
 
 /**
  * Module exports.

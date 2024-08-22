@@ -1,7 +1,7 @@
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-var consul = require('consul');
-var camelCase = require('camelcase');
+const EventEmitter = require('events').EventEmitter;
+const util = require('util');
+const consul = require('consul');
+const camelCase = require('camelcase');
 
 /**
  * Read module config, returning config for Consul client
@@ -9,11 +9,11 @@ var camelCase = require('camelcase');
  */
 function makeConsulConfig (configIn, envObj) {
 	// Consul client config can be passed in whole
-	var consulConfig = configIn.consulClientConfig || {};
+	const consulConfig = configIn.consulClientConfig || {};
 
 	// Consul host/port can be sourced from env CONSUL_HTTP_ADDR
 	if (envObj.CONSUL_HTTP_ADDR) {
-		var httpAddr = envObj.CONSUL_HTTP_ADDR;
+		let httpAddr = envObj.CONSUL_HTTP_ADDR;
 		consulConfig.secure = (httpAddr.substr(0, 5) === 'https');
 		httpAddr = httpAddr.replace('http://', '').replace('https://', '');
 		httpAddr = httpAddr.split(':');
@@ -38,10 +38,10 @@ exports.makeConsulConfig = makeConsulConfig;
  */
 function parseConsul (kvData, dataIn, prefix) {
 	if (dataIn) {
-		for (var i = 0; i < dataIn.length; i++) {
+		for (let i = 0; i < dataIn.length; i++) {
 			if (dataIn[i].Key !== undefined && dataIn[i].Value !== undefined) {
 				// Standardize the key
-				var kvKey = dataIn[i].Key;
+				let kvKey = dataIn[i].Key;
 				kvKey = kvKey.replace(prefix, '');
 				kvKey = camelCase(kvKey);
 
@@ -69,7 +69,7 @@ function parseEnv (kvData, envObj, prefix) {
 			// Skip env keys which don't start with prefix
 			if (envKey.substring(0, prefix.length) === prefix) {
 				// Standardize the key
-				var kvKey = envKey.replace(prefix, '');
+				let kvKey = envKey.replace(prefix, '');
 				kvKey = camelCase(kvKey);
 				kvData[kvKey] = envObj[envKey];
 			}
@@ -89,10 +89,10 @@ function parseArgs (kvData, args) {
 		// Skip args that don't start with "--"
 		if (val.substring(0, 2) === '--') {
 			// Break apart key/value
-			var argParts = val.substring(2).split('=', 2);
+			const argParts = val.substring(2).split('=', 2);
 			if (argParts.length > 1) {
 				// Standardize the key
-				var newKey = camelCase(argParts[0]);
+				const newKey = camelCase(argParts[0]);
 				kvData[newKey] = argParts[1];
 			}
 		}
@@ -108,10 +108,10 @@ exports.parseArgs = parseArgs;
  * @returns {array} List of missing keys
  */
 function findMissingKeys (kvData, requiredKeys) {
-	var missingKeys = [];
+	const missingKeys = [];
 	if (requiredKeys) {
-		for (var i = 0; i < requiredKeys.length; i++) {
-			var requiredKey = requiredKeys[i];
+		for (let i = 0; i < requiredKeys.length; i++) {
+			const requiredKey = requiredKeys[i];
 			if (kvData[requiredKey] === undefined) {
 				missingKeys.push(requiredKey);
 			}
@@ -128,13 +128,13 @@ exports.findMissingKeys = findMissingKeys;
  * @returns {array} List of added/removed/changed keys
  */
 function findChangedKeys (self) {
-	var changedKeys = [];
-	var temp = JSON.parse(JSON.stringify(self.lastGoodKvData));
+	const changedKeys = [];
+	const temp = JSON.parse(JSON.stringify(self.lastGoodKvData));
 	// Loop on previous findings, check for existence of and compare Key=>ModifyIndex map
-	var newKeys = Object.keys(self.kvData);
-	for (var j = 0; j < newKeys.length; j++) {
-		var newKey = newKeys[j];
-		var newVal = self.kvData[newKey];
+	const newKeys = Object.keys(self.kvData);
+	for (let j = 0; j < newKeys.length; j++) {
+		const newKey = newKeys[j];
+		const newVal = self.kvData[newKey];
 		if (temp[newKey] && temp[newKey] === newVal) {
 			delete temp[newKey];
 		} else {
@@ -153,7 +153,7 @@ exports.findChangedKeys = findChangedKeys;
 /**
  * JavaScript Pseudo-class that is compatible all the way back to Node 0.10
  */
-var Consulea = (function () {
+const Consulea = (function () {
 	// JavaScript Pseudo-class constructor
 	function Consulea (configIn) {
 		// Verify required things are set
@@ -161,7 +161,7 @@ var Consulea = (function () {
 			throw new Error('consulPrefix not defined');
 		}
 
-		var self = this;
+		const self = this;
 		this.config = configIn;
 		this.kvDataDefault = configIn.defaultData || {};
 		this.kvData = {};
@@ -218,7 +218,7 @@ var Consulea = (function () {
  * Start the Consul watcher
  */
 Consulea.prototype.watchStart = function () {
-	var self = this;
+	const self = this;
 
 	// Start a watcher
 	this._watcher = this.consulClient.watch({
@@ -243,23 +243,23 @@ Consulea.prototype.watchStart = function () {
 		}
 
 		// Build a new kvData from Consul, then Env, then Arguments
-		var kvData = self.kvDataDefault;
+		let kvData = self.kvDataDefault;
 		kvData = parseConsul(kvData, response, self.config.consulPrefix);
 		kvData = parseEnv(kvData, process.env, self.config.envPrefix);
 		kvData = parseArgs(kvData, process.argv);
 		self.kvData = kvData;
 
-		var changedKeys = findChangedKeys(self);
+		const changedKeys = findChangedKeys(self);
 
 		// Verify require keys
-		var missingKeys = findMissingKeys(kvData, self.config.requiredKeys);
+		const missingKeys = findMissingKeys(kvData, self.config.requiredKeys);
 
 		// Something is missing
 		if (missingKeys.length > 0) {
-			var missingKeyList = missingKeys.join(', ');
+			const missingKeyList = missingKeys.join(', ');
 			// This is handled differently, depending on if this is the first time or not
-			var whichRule = (self.initialLoad ? 'ifMissingKeysOnStartUp' : 'ifMissingKeysOnUpdate');
-			var ruleValue = self.config[whichRule];
+			const whichRule = (self.initialLoad ? 'ifMissingKeysOnStartUp' : 'ifMissingKeysOnUpdate');
+			const ruleValue = self.config[whichRule];
 
 			switch (ruleValue) {
 				case 'exit':
@@ -287,8 +287,8 @@ Consulea.prototype.watchStart = function () {
 					return;
 
 				case 'lastGoodValue':
-					for (var i = 0; i < missingKeys.length; i++) {
-						var missingKey = missingKeys[i];
+					for (let i = 0; i < missingKeys.length; i++) {
+						const missingKey = missingKeys[i];
 						if (self.lastGoodKvData[missingKey] !== undefined) {
 							self.handleError({
 								code: 'MISSING_KEY_USED_PREV_VAL',
@@ -319,7 +319,7 @@ Consulea.prototype.watchStart = function () {
 		}
 
 		// Make a copy so the code using this module can not modify kvData by accident
-		var kvDataCopy = JSON.parse(JSON.stringify(self.kvData));
+		const kvDataCopy = JSON.parse(JSON.stringify(self.kvData));
 
 		// Emit "update" event every time there is a change, and include some extra metadata
 		self.emit('update', null, kvDataCopy, {
