@@ -1,7 +1,7 @@
 var test = require("tape");
 var tt = require("../consulea"); // test target
 
-test("makeConsulConfig()", t => {
+test("makeConsulConfig()", function (t) {
   t.equal(typeof tt.makeConsulConfig, "function", "Function exists");
   var configIn = {};
   var envObj = {};
@@ -54,7 +54,7 @@ test("makeConsulConfig()", t => {
   t.end();
 });
 
-test("parseConsul()", t => {
+test("parseConsul()", function (t) {
   t.equal(typeof tt.parseConsul, "function", "Function exists");
   var kvData = {};
   var dataIn = [];
@@ -131,7 +131,7 @@ test("parseConsul()", t => {
   t.end();
 });
 
-test("parseEnv()", t => {
+test("parseEnv()", function (t) {
   t.equal(typeof tt.parseEnv, "function", "Function exists");
   var kvdata = {};
   var envObj = {};
@@ -165,7 +165,7 @@ test("parseEnv()", t => {
   t.end();
 });
 
-test("parseArgs()", t => {
+test("parseArgs()", function (t) {
   t.equal(typeof tt.parseArgs, "function", "Function exists");
   var args = [];
   var kvdata = {};
@@ -194,7 +194,7 @@ test("parseArgs()", t => {
   t.end();
 });
 
-test("findMissingKeys()", t => {
+test("findMissingKeys()", function (t) {
   t.equal(typeof tt.findMissingKeys, "function", "Function exists");
   var config = {};
   var requiredKeys = [];
@@ -228,7 +228,7 @@ test("findMissingKeys()", t => {
   t.end();
 });
 
-test("findChangedKeys()", t => {
+test("findChangedKeys()", function (t) {
   t.equal(typeof tt.findChangedKeys, "function", "Function exists");
   var self = {};
 
@@ -316,7 +316,7 @@ test("findChangedKeys()", t => {
   t.end();
 });
 
-test("Consulea()", t => {
+test("Consulea()", function (t) {
   t.equal(typeof tt.Consulea, "function", "Function exists");
   t.end();
 });
