@@ -17,7 +17,7 @@ const consulea = new Consulea({
 // Store your config however you please.
 const myConfig = {};
 
-consulea.on('update', function (err, newConfig, meta) {
+consulea.on('update', (err, newConfig, meta) => {
 	// The state of config has changed, use this event to save a new copy or action upon the result.
 	// This event is called every time the Consul namespace is updated and also upon first start.
 	myConfig = newConfig;
@@ -25,7 +25,7 @@ consulea.on('update', function (err, newConfig, meta) {
 	console.log('consulea on-update found these keys have changed:', meta.changedKeys);
 });
 
-consulea.on('ready', function (err, newConfig) {
+consulea.on('ready', (err, newConfig) => {
 	// Continue starting up project, with all config loaded for the first time.
 	// This event is only called once.
 	myConfig = newConfig;
@@ -35,19 +35,19 @@ consulea.on('ready', function (err, newConfig) {
 	//
 });
 
-consulea.on('error', function (err) {
+consulea.on('error', (err) => {
 	console.error('consulea on-error triggered: ', err);
 });
 
 // Optionally stop the watch
-setTimeout(function () {
+setTimeout(() => {
 	consulea.watchStop();
 }, 5000);
 
-setTimeout(function () {
+setTimeout(() => {
 	consulea.watchStart();
 }, 10000);
 
 
 // Run example script for 15 minutes
-setTimeout(function () {}, 900000);
+setTimeout(() => {}, 900000);

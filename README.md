@@ -39,23 +39,23 @@ let myConfig = {};
 
 // This event is called every time the Consul namespace is updated and upon first start.
 // "meta" will supply things like keysChanged, and initialLoad
-consulea.on('update', function (err, data, meta) {
+consulea.on('update', (err, data, meta) => {
     myConfig = data;
 });
 
 // Continue starting up project, with all config loaded for the first time.
 // This event is only called once.
-consulea.on('ready', function (err, data) {
+consulea.on('ready', (err, data) => {
     // Proceed with starting up... open service ports, etc.
 });
 
 // Or, if callbacks are more your style...
-consulea.callbackWhenReady(function (err){
+consulea.callbackWhenReady((err) => {
     // Proceed with starting up... open service ports, etc.
 });
 
 // Handle errors and warnings as you see fit
-consulea.on('error', function (err) {
+consulea.on('error', (err) => {
     console.error('Consulea error:', err);
 });
 ```

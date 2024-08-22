@@ -65,7 +65,7 @@ exports.parseConsul = parseConsul;
 function parseEnv (kvData, envObj, prefix) {
 	if (prefix) {
 		prefix += '_';
-		Object.keys(envObj).forEach(function (envKey) {
+		Object.keys(envObj).forEach((envKey) => {
 			// Skip env keys which don't start with prefix
 			if (envKey.substring(0, prefix.length) === prefix) {
 				// Standardize the key
@@ -85,7 +85,7 @@ exports.parseEnv = parseEnv;
  * @returns {object} Discovered key/value data output
  */
 function parseArgs (kvData, args) {
-	args.forEach(function (val) {
+	args.forEach((val) => {
 		// Skip args that don't start with "--"
 		if (val.substring(0, 2) === '--') {
 			// Break apart key/value
@@ -142,7 +142,7 @@ function findChangedKeys (self) {
 		}
 	}
 	// Standardize the key
-	Object.keys(temp).forEach(function (kvKey) {
+	Object.keys(temp).forEach((kvKey) => {
 		kvKey = kvKey.replace(self.config.consulPrefix, '');
 		changedKeys.push(camelCase(kvKey));
 	});
@@ -198,7 +198,7 @@ const Consulea = (function () {
 			if (this.isReady) {
 				callback();
 			} else {
-				setTimeout(function () {
+				setTimeout(() => {
 					self.callbackWhenReady(callback);
 				}, 50);
 			}
@@ -230,7 +230,7 @@ Consulea.prototype.watchStart = function () {
 	});
 
 	// When Consul namespace changes or is first loaded...
-	this._watcher.on('change', function (response, res) {
+	this._watcher.on('change', (response, res) => {
 		// Try to catch errors using http.IncomingMessage
 		if (res.statusCode !== 200) {
 			self.handleError({
@@ -336,7 +336,7 @@ Consulea.prototype.watchStart = function () {
 	});
 
 	// Emit "error" when Consul connection emits an error
-	this._watcher.on('error', function (err) {
+	this._watcher.on('error', (err) => {
 		self.handleError({
 			code: 'CLIENT_ERR',
 			level: 'WARN',
